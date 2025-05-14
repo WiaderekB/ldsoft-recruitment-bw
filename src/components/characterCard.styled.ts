@@ -35,11 +35,14 @@ const styles = StyleSheet.create({
   },
   infoGroup: {
     marginTop: 8,
+    marginBottom: 4,
+    paddingStart: 4,
   },
   label: {
     color: '#59695C',
     fontWeight: '500',
     fontSize: 12,
+    marginBottom: 4,
   },
   value: {
     color: '#162C1B',

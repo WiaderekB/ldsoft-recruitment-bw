@@ -1,7 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {
+  Animated,
+  Easing,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useLikedCharacters} from '../../../../services/LikedCharactersContext';
 import {MainStackNavigationProp} from '../../../Main/Main.routes';
 import {CharacterDetailsStackParamList} from '../../CharacterDetails.routes';
@@ -9,15 +16,37 @@ import {styles} from './CharacterDetails.styled';
 
 const CharacterDetailsScreen = () => {
   const {goBack} = useNavigation<MainStackNavigationProp>();
-
   const route =
     useRoute<
       RouteProp<CharacterDetailsStackParamList, 'CharacterDetailsScreen'>
     >();
-  const {id, name, status, species, image, origin, gender} = route.params;
 
+  const {id, name, status, species, image, origin, gender} = route.params;
   const {isLiked, toggleLike} = useLikedCharacters();
   const liked = isLiked(id.toString());
+
+  // Animation
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(10)).current; // Small slide-up effect
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        delay: 100,
+        easing: Easing.out(Easing.exp),
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        delay: 100,
+        easing: Easing.out(Easing.exp),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [fadeAnim, slideAnim]);
 
   return (
     <View style={styles.container}>
@@ -28,7 +57,14 @@ const CharacterDetailsScreen = () => {
       <View style={styles.cardContainer}>
         <View style={styles.cardBackground} />
 
-        <View style={styles.cardContent}>
+        <Animated.View
+          style={[
+            styles.cardContent,
+            {
+              opacity: fadeAnim,
+              transform: [{translateY: slideAnim}],
+            },
+          ]}>
           <View style={styles.imageWrapper}>
             <Image
               source={{uri: image}}
@@ -36,6 +72,7 @@ const CharacterDetailsScreen = () => {
               resizeMode="cover"
             />
           </View>
+
           <View style={styles.section}>
             <Text style={styles.label}>NAME</Text>
             <Text style={styles.valueName}>{name}</Text>
@@ -77,7 +114,7 @@ const CharacterDetailsScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </View>
     </View>
   );

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, {useState} from 'react';
-import {Text, TextInput, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Animated, Text, TextInput, View} from 'react-native';
 import styles from './searchContainer.styled';
 
 interface SearchBarProps {
@@ -9,6 +9,28 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
   const [search, setSearch] = useState('');
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (search !== '') {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [search]);
+
+  const handleClear = () => {
+    onSubmit('');
+    setSearch('');
+  };
 
   return (
     <View style={styles.navigationContainer}>
@@ -23,6 +45,15 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
           onSubmitEditing={() => onSubmit(search)}
           style={styles.searchInput}
         />
+
+        <Animated.View style={{opacity: fadeAnim}}>
+          <Ionicons
+            name={'close'}
+            size={16}
+            color={'#162C1B'}
+            onPress={handleClear}
+          />
+        </Animated.View>
       </View>
     </View>
   );
