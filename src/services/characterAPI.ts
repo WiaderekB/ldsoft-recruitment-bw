@@ -15,23 +15,26 @@ export type Character = {
 
 export const getCharacters = async (
   query: string,
-): Promise<{characters: Character[]}> => {
+  page: number = 1,
+): Promise<{characters: Character[]; totalPages: number}> => {
   try {
     const url =
       query.length === 0
-        ? `${BASE_URL}/character/`
-        : `${BASE_URL}/character/?name=${query}`;
+        ? `${BASE_URL}/character/?page=${page}`
+        : `${BASE_URL}/character/?name=${query}&page=${page}`;
 
     const response = await fetch(url);
     const data = await response.json();
 
     return {
       characters: data.results || [],
+      totalPages: data.info?.pages || 1,
     };
   } catch (error) {
     console.error('Failed to fetch searched characters:', error);
     return {
       characters: [],
+      totalPages: 1,
     };
   }
 };
