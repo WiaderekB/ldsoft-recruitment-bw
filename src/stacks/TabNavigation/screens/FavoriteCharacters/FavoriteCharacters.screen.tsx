@@ -1,13 +1,53 @@
-import {View, Text} from 'react-native';
-import React from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {useQuery} from '@tanstack/react-query';
+import React, {useState} from 'react';
+import {ActivityIndicator, Button, ScrollView} from 'react-native';
+import CharacterCard from '../../../../components/characterCard';
+import SearchBar from '../../../../components/searchContainer';
+import {getCharacters} from '../../../../services/characterAPI';
+import {useLikedCharacters} from '../../../../services/LikedCharactersContext';
+import {MainStackNavigationProp} from '../../../Main/Main.routes';
 import {styles} from './FavoriteCharacters.styled';
 
-const FavoriteCharactersScreen = () => {
+const CharacterListScreen = () => {
+  const [search, setSearch] = useState('');
+  const {navigate} = useNavigation<MainStackNavigationProp>();
+
+  const {likedCharacters} = useLikedCharacters();
+
+  const {isPending, refetch, data} = useQuery({
+    queryKey: ['characters', {search}],
+    queryFn: () => getCharacters(search),
+  });
+
+  const handleSubmit = (submittedSearch: string) => {
+    setSearch(submittedSearch);
+    refetch();
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Implement FavoriteCharactersScreen</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <SearchBar onSubmit={handleSubmit} />
+
+      {isPending && <ActivityIndicator size="large" color="#162C1B" />}
+
+      {!isPending &&
+        data?.characters
+          .filter(character => likedCharacters.has(character.id.toString()))
+          .map(character => (
+            <CharacterCard key={character.id} {...character} />
+          ))}
+
+      <Button
+        title="Navigate to Details screen"
+        onPress={(): void => {
+          navigate('CharacterDetailsStack', {
+            screen: 'CharacterDetailsScreen',
+          });
+        }}
+      />
+    </ScrollView>
   );
 };
 
-export default FavoriteCharactersScreen;
+export default CharacterListScreen;

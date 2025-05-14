@@ -27,13 +27,12 @@ const CharacterListScreen = () => {
     <ScrollView style={styles.container}>
       <SearchBar onSubmit={handleSubmit} />
 
-      {isPending ? (
-        <ActivityIndicator size="large" color="#162C1B" />
-      ) : (
+      {isPending && <ActivityIndicator size="large" color="#162C1B" />}
+
+      {!isPending &&
         data?.characters.map(character => (
           <CharacterCard key={character.id} {...character} />
-        ))
-      )}
+        ))}
 
       <Button
         title="Navigate to Details screen"
