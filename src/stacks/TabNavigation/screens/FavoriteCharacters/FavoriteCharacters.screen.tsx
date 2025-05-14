@@ -25,13 +25,15 @@ const CharacterListScreen = () => {
     isLiked(character.id.toString()),
   );
 
+  const noResults = data?.characters?.length === 0;
+
   return (
     <ScrollView style={styles.container}>
       <SearchBar onSubmit={handleSubmit} />
 
       {isPending && <ActivityIndicator size="large" color="#162C1B" />}
 
-      {!isPending && likedCharacters?.length === 0 && (
+      {!isPending && noResults && (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
             No favorites yet! Start liking characters to see them here
@@ -40,6 +42,7 @@ const CharacterListScreen = () => {
       )}
 
       {!isPending &&
+        !noResults &&
         likedCharacters?.map(character => (
           <CharacterCard key={character.id} {...character} />
         ))}

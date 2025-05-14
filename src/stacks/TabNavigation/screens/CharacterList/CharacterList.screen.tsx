@@ -29,7 +29,7 @@ const CharacterListScreen = () => {
     });
   };
 
-  const noResults = !isPending && data?.characters?.length === 0;
+  const noResults = data?.characters?.length === 0;
 
   return (
     <ScrollView style={styles.container} ref={scrollRef}>
@@ -41,7 +41,7 @@ const CharacterListScreen = () => {
           <CharacterCard key={character.id} {...character} />
         ))}
 
-      {noResults && (
+      {noResults && !isPending && (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
             No characters found. Try a different search!
@@ -49,7 +49,7 @@ const CharacterListScreen = () => {
         </View>
       )}
 
-      {!noResults && (
+      {!noResults && !isPending && (
         <PaginationContainer
           handlePageSelect={(page: number) => {
             onPressTouch();
