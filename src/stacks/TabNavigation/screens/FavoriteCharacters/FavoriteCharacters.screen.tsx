@@ -1,19 +1,15 @@
-import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@tanstack/react-query';
 import React, {useState} from 'react';
-import {ActivityIndicator, Button, ScrollView} from 'react-native';
+import {ActivityIndicator, ScrollView} from 'react-native';
 import CharacterCard from '../../../../components/characterCard';
 import SearchBar from '../../../../components/searchContainer';
 import {getCharacters} from '../../../../services/characterAPI';
 import {useLikedCharacters} from '../../../../services/LikedCharactersContext';
-import {MainStackNavigationProp} from '../../../Main/Main.routes';
 import {styles} from './FavoriteCharacters.styled';
 
 const CharacterListScreen = () => {
   const [search, setSearch] = useState('');
-  const {navigate} = useNavigation<MainStackNavigationProp>();
-
-  const {likedCharacters} = useLikedCharacters();
+  const {isLiked} = useLikedCharacters();
 
   const {isPending, refetch, data} = useQuery({
     queryKey: ['characters', {search}],
@@ -33,19 +29,10 @@ const CharacterListScreen = () => {
 
       {!isPending &&
         data?.characters
-          .filter(character => likedCharacters.has(character.id.toString()))
+          .filter(character => isLiked(character.id.toString()))
           .map(character => (
             <CharacterCard key={character.id} {...character} />
           ))}
-
-      <Button
-        title="Navigate to Details screen"
-        onPress={(): void => {
-          navigate('CharacterDetailsStack', {
-            screen: 'CharacterDetailsScreen',
-          });
-        }}
-      />
     </ScrollView>
   );
 };
