@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Character} from '../services/characterAPI';
+import {useLikedCharacters} from '../services/LikedCharactersContext';
 
 type CharacterProps = Character;
 
@@ -13,7 +14,8 @@ const CharacterCard = ({
   image,
   ...rest
 }: CharacterProps) => {
-  const liked = false;
+  const {isLiked, toggleLike} = useLikedCharacters();
+  const liked = isLiked(id.toString());
   return (
     <View style={styles.container}>
       <View style={styles.cardWrapper}>
@@ -41,6 +43,7 @@ const CharacterCard = ({
               resizeMode="cover"
             />
             <TouchableOpacity
+              onPress={() => toggleLike(id.toString())}
               style={[
                 styles.likeButton,
                 liked ? styles.likedButton : styles.unlikedButton,
