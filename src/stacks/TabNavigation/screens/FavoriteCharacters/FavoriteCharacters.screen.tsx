@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import {useQuery} from '@tanstack/react-query';
 import React, {useState} from 'react';
 import {ActivityIndicator, ScrollView, Text, View} from 'react-native';
@@ -48,8 +49,10 @@ const CharacterListScreen = () => {
 
       {!isPending && noResults && (
         <View style={styles.emptyContainer}>
+          <Ionicons style={styles.icon} name="heart-outline" size={60} />
+          <Text style={styles.emptyText}>No favorites yet!</Text>
           <Text style={styles.emptyText}>
-            No favorites yet! Start liking characters to see them here
+            Start liking characters to see them here
           </Text>
         </View>
       )}

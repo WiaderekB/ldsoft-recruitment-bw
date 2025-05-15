@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import {useQuery} from '@tanstack/react-query';
 import React, {useState} from 'react';
 import {ActivityIndicator, ScrollView, Text, View} from 'react-native';
@@ -48,11 +49,11 @@ const CharacterListScreen = () => {
           <CharacterCard key={character.id} {...character} />
         ))}
 
-      {noResults && !isPending && (
+      {!isPending && noResults && (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            No characters found. Try a different search!
-          </Text>
+          <Ionicons style={styles.icon} name="close-circle-outline" size={60} />
+          <Text style={styles.emptyText}>No characters found.</Text>
+          <Text style={styles.emptyText}>Try a different search!</Text>
         </View>
       )}
 

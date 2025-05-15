@@ -7,14 +7,17 @@ export const styles = StyleSheet.create({
     padding: 16,
   },
   emptyContainer: {
-    marginTop: 40,
+    marginTop: '30%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#555',
     textAlign: 'center',
-    paddingHorizontal: 20,
+    marginTop: 4,
+  },
+  icon: {
+    marginBottom: 8,
   },
 });
