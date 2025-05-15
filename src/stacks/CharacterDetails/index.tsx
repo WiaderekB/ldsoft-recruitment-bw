@@ -9,6 +9,7 @@ export const CharacterDetailsStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
+        options={{headerShown: false}}
         name={CharacterDetailsStackRoutes.CharacterDetailsScreen}
         children={CharacterDetailsScreen}
       />
