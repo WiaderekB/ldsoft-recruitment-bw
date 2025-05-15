@@ -53,3 +53,51 @@ export const getCharacters = async (
     };
   }
 };
+export const getFavouriteCharacters = async (
+  ids: string[],
+  query: string,
+  selectedStatus: string,
+  selectedSpecies: string,
+): Promise<{characters: Character[]}> => {
+  try {
+    if (ids.length === 0) {
+      return {
+        characters: [],
+      };
+    }
+    const url = `${BASE_URL}/character/${ids.join(',')}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (ids.length == 1) var characters: Character[] = [data];
+    else var characters: Character[] = data || [];
+
+    if (query.length > 0) {
+      characters = characters.filter(character =>
+        character.name.toLowerCase().includes(query.toLowerCase()),
+      );
+    }
+    if (selectedStatus != '') {
+      characters = characters.filter(
+        character =>
+          character.status.toLowerCase() === selectedStatus.toLowerCase(),
+      );
+    }
+    if (selectedSpecies != '') {
+      characters = characters.filter(
+        character =>
+          character.species.toLowerCase() === selectedSpecies.toLowerCase(),
+      );
+    }
+
+    return {
+      characters,
+    };
+  } catch (error) {
+    console.error('Failed to fetch searched characters:', error);
+    return {
+      characters: [],
+    };
+  }
+};
