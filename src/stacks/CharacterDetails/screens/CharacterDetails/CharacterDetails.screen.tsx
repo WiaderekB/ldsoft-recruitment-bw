@@ -1,4 +1,3 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect, useRef} from 'react';
 import {
@@ -9,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useLikedCharacters} from '../../../../services/LikedCharactersContext';
+import DetailsLikeButton from '../../../../components/detailsLikeButton';
 import {MainStackNavigationProp} from '../../../Main/Main.routes';
 import {CharacterDetailsStackParamList} from '../../CharacterDetails.routes';
 import {styles} from './CharacterDetails.styled';
@@ -22,12 +21,9 @@ const CharacterDetailsScreen = () => {
     >();
 
   const {id, name, status, species, image, origin, gender} = route.params;
-  const {isLiked, toggleLike} = useLikedCharacters();
-  const liked = isLiked(id.toString());
 
-  // Animation
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(10)).current; // Small slide-up effect
+  const slideAnim = useRef(new Animated.Value(10)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -101,18 +97,7 @@ const CharacterDetailsScreen = () => {
           </View>
 
           <View style={styles.row}>
-            <TouchableOpacity
-              style={styles.favoriteButton}
-              onPress={() => toggleLike(id.toString())}>
-              {liked ? (
-                <Ionicons name={'star'} size={16} color={'#F89F34'} />
-              ) : (
-                <Ionicons name={'star-outline'} size={16} color={'#000'} />
-              )}
-              <Text style={styles.favoriteText}>
-                {liked ? 'Remove from Favorites' : 'Add to Favorites'}
-              </Text>
-            </TouchableOpacity>
+            <DetailsLikeButton id={id} />
           </View>
         </Animated.View>
       </View>

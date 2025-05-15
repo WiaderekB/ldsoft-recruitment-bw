@@ -19,7 +19,7 @@ const CharacterCard = ({
   origin,
 }: CharacterProps) => {
   const {isLiked, toggleLike} = useLikedCharacters();
-  const liked = isLiked(id.toString());
+  const liked = isLiked(id);
   const {navigate} = useNavigation<MainStackNavigationProp>();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -77,7 +77,7 @@ const CharacterCard = ({
                 />
                 <TouchableOpacity
                   onPress={() => {
-                    toggleLike(id.toString());
+                    toggleLike(id);
                   }}
                   style={[
                     styles.likeButton,

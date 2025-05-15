@@ -1,7 +1,7 @@
 const BASE_URL = 'https://rickandmortyapi.com/api';
 
 export type Character = {
-  id: number;
+  id: string;
   name: string;
   status: string;
   species: string;
