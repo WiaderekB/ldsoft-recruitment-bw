@@ -5,18 +5,13 @@ import FiltersModal from './filterModal';
 import styles from './searchContainer.styled';
 
 interface SearchBarProps {
-  onSubmit: (
-    text: string,
-    selectedStatus: string[],
-    selectedSpecies: string[],
-  ) => void;
+  handleSearch: (text: string) => void;
+  handleFilter: (selectedStatus: string, selectedSpecies: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
+const SearchBar: React.FC<SearchBarProps> = ({handleSearch, handleFilter}) => {
   const [search, setSearch] = useState('');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
-  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -65,7 +60,7 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
   };
 
   const handleClear = () => {
-    onSubmit('', selectedStatus, selectedSpecies);
+    handleSearch('');
     setSearch('');
   };
 
@@ -84,9 +79,7 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
           onChangeText={setSearch}
           placeholder="Search the characters"
           placeholderTextColor="#2B2D4299"
-          onSubmitEditing={() =>
-            onSubmit(search, selectedStatus, selectedSpecies)
-          }
+          onSubmitEditing={() => handleSearch(search)}
           style={styles.searchInput}
         />
 
@@ -118,13 +111,9 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
 
       <FiltersModal
         visible={isFilterModalVisible}
-        onSelectStatus={setSelectedStatus}
-        onSelectedSpecies={setSelectedSpecies}
-        selectedStatus={selectedStatus}
-        selectedSpecies={selectedSpecies}
-        onConfirm={() => {
+        handleFilter={(selectedStatus: string, selectedSpecies: string) => {
           setIsFilterModalVisible(false);
-          onSubmit(search, selectedStatus, selectedSpecies);
+          handleFilter(selectedStatus, selectedSpecies);
         }}
       />
     </View>

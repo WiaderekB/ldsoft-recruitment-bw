@@ -5,24 +5,14 @@ import {styles} from './filterModal.styled';
 
 interface FilterModalProps {
   visible: boolean;
-  selectedStatus: string[];
-  selectedSpecies: string[];
-  onSelectStatus: (list: string[]) => void;
-  onSelectedSpecies: (list: string[]) => void;
-  onConfirm: () => void;
+  handleFilter: (selectedStatus: string, selectedSpecies: string) => void;
 }
 
-const FiltersModal = ({
-  visible,
-  selectedStatus,
-  selectedSpecies,
-  onSelectStatus,
-  onSelectedSpecies,
-  onConfirm,
-}: FilterModalProps) => {
+const FiltersModal = ({visible, handleFilter}: FilterModalProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
-
+  const [selectedStatus, setSelectedStatus] = React.useState<string>('');
+  const [selectedSpecies, setSelectedSpecies] = React.useState<string>('');
   useEffect(() => {
     if (visible) {
       Animated.parallel([
@@ -56,21 +46,17 @@ const FiltersModal = ({
   const statusOptions = ['Alive', 'Dead', 'Unknown'];
   const speciesOptions = ['Human', 'Humanoid'];
 
-  const toggleItem = (
-    value: string,
-    currentList: string[],
-    onChange: (list: string[]) => void,
-  ) => {
-    onChange(
-      currentList.includes(value)
-        ? currentList.filter(item => item !== value)
-        : [...currentList, value],
-    );
+  const resetFilters = () => {
+    setSelectedStatus('');
+    setSelectedSpecies('');
   };
 
-  const resetFilters = () => {
-    onSelectStatus([]);
-    onSelectedSpecies([]);
+  const handleSelect = (fn: Function, option: string, selected: string) => {
+    if (selected === option) {
+      fn('');
+    } else {
+      fn(option);
+    }
   };
 
   return (
@@ -92,15 +78,15 @@ const FiltersModal = ({
               key={option}
               style={styles.checkboxRow}
               onPress={() =>
-                toggleItem(option, selectedStatus, onSelectStatus)
+                handleSelect(setSelectedStatus, option, selectedStatus)
               }>
               <CheckBox
-                checked={selectedStatus.includes(option)}
+                checked={selectedStatus == option}
                 onPress={() =>
-                  toggleItem(option, selectedStatus, onSelectStatus)
+                  handleSelect(setSelectedStatus, option, selectedStatus)
                 }
                 borderRadius={4}
-                color={selectedStatus.includes(option) ? '#162C1B' : '#DAE4DC'}
+                color={selectedStatus === option ? '#162C1B' : '#DAE4DC'}
               />
               <Text style={styles.checkboxText}>{option}</Text>
             </TouchableOpacity>
@@ -114,15 +100,15 @@ const FiltersModal = ({
               key={option}
               style={styles.checkboxRow}
               onPress={() =>
-                toggleItem(option, selectedSpecies, onSelectedSpecies)
+                handleSelect(setSelectedSpecies, option, selectedSpecies)
               }>
               <CheckBox
-                checked={selectedSpecies.includes(option)}
+                checked={selectedSpecies == option}
                 onPress={() =>
-                  toggleItem(option, selectedSpecies, onSelectedSpecies)
+                  handleSelect(setSelectedSpecies, option, selectedSpecies)
                 }
                 borderRadius={4}
-                color={selectedSpecies.includes(option) ? '#162C1B' : '#DAE4DC'}
+                color={selectedSpecies === option ? '#162C1B' : '#DAE4DC'}
               />
               <Text style={styles.checkboxText}>{option}</Text>
             </TouchableOpacity>
@@ -136,7 +122,7 @@ const FiltersModal = ({
             <Text style={styles.resetText}>RESET</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={onConfirm}
+            onPress={() => handleFilter(selectedStatus, selectedSpecies)}
             style={[styles.button, styles.applyButton]}>
             <Text style={styles.applyText}>APPLY</Text>
           </TouchableOpacity>

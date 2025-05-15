@@ -10,14 +10,21 @@ import {styles} from './CharacterList.styled';
 const CharacterListScreen = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [selectedSpecies, setSelectedSpecies] = useState<string>('');
 
   const {isPending, refetch, data} = useQuery({
-    queryKey: ['characters', {search, page}],
-    queryFn: () => getCharacters(search, page),
+    queryKey: ['characters', {search, selectedStatus, selectedSpecies, page}],
+    queryFn: () => getCharacters(search, selectedStatus, selectedSpecies, page),
   });
 
-  const handleSubmit = (submittedSearch: string) => {
-    setSearch(submittedSearch);
+  const handleSearch = (text: string) => {
+    setSearch(text);
+    refetch();
+  };
+  const handleFilter = (selectedStatus: string, selectedSpecies: string) => {
+    setSelectedSpecies(selectedSpecies);
+    setSelectedStatus(selectedStatus);
     refetch();
   };
 
@@ -33,7 +40,7 @@ const CharacterListScreen = () => {
 
   return (
     <ScrollView style={styles.container} ref={scrollRef}>
-      <SearchBar onSubmit={handleSubmit} />
+      <SearchBar handleSearch={handleSearch} handleFilter={handleFilter} />
       {isPending && <ActivityIndicator size="large" color="#162C1B" />}
 
       {!isPending &&

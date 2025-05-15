@@ -15,13 +15,28 @@ export type Character = {
 
 export const getCharacters = async (
   query: string,
+  selectedStatus: string,
+  selectedSpecies: string,
   page: number = 1,
 ): Promise<{characters: Character[]; totalPages: number}> => {
   try {
-    const url =
-      query.length === 0
-        ? `${BASE_URL}/character/?page=${page}`
-        : `${BASE_URL}/character/?name=${query}&page=${page}`;
+    const queryParams = new URLSearchParams();
+
+    if (query.length > 0) {
+      queryParams.append('name', query);
+    }
+
+    if (selectedStatus != '') {
+      queryParams.append('status', selectedStatus);
+    }
+
+    if (selectedSpecies != '') {
+      queryParams.append('species', selectedSpecies);
+    }
+
+    queryParams.append('page', page.toString());
+
+    const url = `${BASE_URL}/character/?${queryParams.toString()}`;
 
     const response = await fetch(url);
     const data = await response.json();
