@@ -25,7 +25,7 @@ const CharacterListScreen = () => {
     isLiked(character.id.toString()),
   );
 
-  const noResults = data?.characters?.length === 0;
+  const noResults = likedCharacters?.length === 0;
 
   return (
     <ScrollView style={styles.container}>

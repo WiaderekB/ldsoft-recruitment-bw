@@ -1,15 +1,25 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, {useEffect, useRef, useState} from 'react';
-import {Animated, Text, TextInput, View} from 'react-native';
+import {Animated, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import FiltersModal from './filterModal';
 import styles from './searchContainer.styled';
 
 interface SearchBarProps {
-  onSubmit: (text: string) => void;
+  onSubmit: (
+    text: string,
+    selectedStatus: string[],
+    selectedSpecies: string[],
+  ) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
   const [search, setSearch] = useState('');
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (search !== '') {
@@ -27,10 +37,42 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
     }
   }, [search]);
 
+  useEffect(() => {
+    Animated.spring(rotateAnim, {
+      toValue: isFilterModalVisible ? 1 : 0,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+  }, [isFilterModalVisible]);
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+  };
+
   const handleClear = () => {
-    onSubmit('');
+    onSubmit('', selectedStatus, selectedSpecies);
     setSearch('');
   };
+
+  const spin = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '-180deg'],
+  });
 
   return (
     <View style={styles.navigationContainer}>
@@ -42,7 +84,9 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
           onChangeText={setSearch}
           placeholder="Search the characters"
           placeholderTextColor="#2B2D4299"
-          onSubmitEditing={() => onSubmit(search)}
+          onSubmitEditing={() =>
+            onSubmit(search, selectedStatus, selectedSpecies)
+          }
           style={styles.searchInput}
         />
 
@@ -55,6 +99,34 @@ const SearchBar: React.FC<SearchBarProps> = ({onSubmit}) => {
           />
         </Animated.View>
       </View>
+
+      <Animated.View style={{transform: [{scale: scaleAnim}]}}>
+        <TouchableOpacity
+          onPress={() => setIsFilterModalVisible(prev => !prev)}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={[
+            styles.buttonBase,
+            isFilterModalVisible ? styles.buttonActive : styles.buttonInactive,
+          ]}>
+          <Text style={styles.buttonText}>FILTER</Text>
+          <Animated.View style={{transform: [{rotateX: spin}]}}>
+            <Ionicons name="chevron-down" size={14} color={'#fff'} />
+          </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
+
+      <FiltersModal
+        visible={isFilterModalVisible}
+        onSelectStatus={setSelectedStatus}
+        onSelectedSpecies={setSelectedSpecies}
+        selectedStatus={selectedStatus}
+        selectedSpecies={selectedSpecies}
+        onConfirm={() => {
+          setIsFilterModalVisible(false);
+          onSubmit(search, selectedStatus, selectedSpecies);
+        }}
+      />
     </View>
   );
 };
